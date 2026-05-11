@@ -1,0 +1,224 @@
+## Prérequis
+ 
+À installer sur votre machine de développement avant de cloner le projet :
+ 
+- **.NET SDK 9.0**
+- **Node.js 20 LTS ou supérieur**
+- **SQL Server LocalDB**
+- **Expo CLI** (uniquement pour le mobile) — `npm install -g expo-cli`
+- **Outils EF Core CLI** :
+  ```bash
+  dotnet tool install --global dotnet-ef
+  ```
+ 
+- **ReportGenerator** :
+  ```bash
+  dotnet tool install --global dotnet-reportgenerator-globaltool
+  ```
+ 
+---
+ 
+## Installation
+ 
+### 1. Cloner le dépôt
+ 
+```bash
+git clone <url-du-depot>
+cd CesiZen.API
+```
+ 
+### 2. Installer les dépendances backend
+ 
+```bash
+dotnet restore
+```
+ 
+### 3. Installer les dépendances du front web
+ 
+```bash
+cd CesiZen.Web/cesizen.web.client
+npm install
+cd ../..
+```
+ 
+### 4. Installer les dépendances du mobile
+ 
+```bash
+cd cesizen-mobile
+npm install
+cd ..
+```
+ 
+---
+ 
+## Configuration
+ 
+L'API a besoin de plusieurs variables pour démarrer (chaîne de connexion à la BDD, secret JWT, mot de passe administrateur initial). Pour ne pas commiter ces valeurs dans le dépôt, elles sont injectées via des **variables d'environnement** définies dans `CesiZen.API/Properties/launchSettings.json`.
+ 
+### 1. Créer son `launchSettings.json` à partir de l'exemple
+ 
+Un fichier `launchSettings.example.json` est versionné dans `CesiZen.API/Properties/`. Copiez-le sous le nom `launchSettings.json` :
+ 
+```bash
+cp CesiZen.API/Properties/launchSettings.example.json CesiZen.API/Properties/launchSettings.json
+```
+ 
+ 
+### 2. Remplir les valeurs sensibles
+ 
+Éditez `launchSettings.json` et remplacez chaque placeholder par sa valeur :
+ 
+```json
+{
+  "profiles": {
+    "CesiZen.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JwtSettings__Secret": "<GENEREZ_UNE_CLE>",
+        "JwtSettings__Issuer": "https://localhost:7001",
+        "JwtSettings__Audience": "https://localhost:7001",
+        "JwtSettings__ExpirationMinutes": "60",
+        "ConnectionStrings__DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=CesiZenDb;Trusted_Connection=true;TrustServerCertificate=true;",
+        "Cors__OriginesAutorisees__0": "http://localhost:5173",
+        "Seed__AdminPassword": "<MOT_DE_PASSE_ADMIN_INITIAL>"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7001;http://localhost:5000"
+    }
+  }
+}
+```
+ 
+### 3. Générer un secret JWT
+ 
+Vous pouvez en générer un avec :
+ 
+- **Linux / macOS** :
+  ```bash
+  openssl rand -base64 64
+  ```
+ 
+- **Windows PowerShell** :
+  ```powershell
+  [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((New-Guid).ToString() + (New-Guid).ToString()))
+  ```
+ 
+### 4. Initialiser la base de données
+ 
+Depuis la racine du projet :
+ 
+```bash
+dotnet ef database update --project CesiZen.Infrastructure --startup-project CesiZen.API
+```
+ 
+Cette commande applique toutes les migrations EF Core sur votre LocalDB. Le seeder s'exécutera automatiquement au premier lancement de l'API et créera les comptes administrateurs ainsi que le référentiel d'émotions.
+ 
+---
+ 
+## Lancement
+ 
+### API
+ 
+```bash
+dotnet run --project CesiZen.API
+```
+ 
+L'API est accessible sur :
+ 
+- HTTPS : `https://localhost:7001`
+- HTTP : `http://localhost:5000`
+- Documentation Swagger : `https://localhost:7001/swagger`
+
+### Front web
+ 
+Dans un second terminal :
+ 
+```bash
+cd CesiZen.Web/cesizen.web.client
+npm run dev
+```
+ 
+Le front est accessible sur `http://localhost:5173`.
+ 
+### Mobile
+ 
+Dans un troisième terminal :
+ 
+```bash
+cd cesizen-mobile
+npx expo start
+```
+ 
+Scannez le QR code avec l'application **Expo Go** (disponible sur iOS et Android) ou lancez un émulateur.
+
+ 
+---
+ 
+## Tests et couverture
+ 
+### Lancer les tests
+ 
+```bash
+cd CesiZen.Tests
+dotnet test
+```
+ 
+### Lancer les tests avec mesure de couverture
+ 
+```bash
+cd CesiZen.Tests
+ 
+# Sur Windows PowerShell
+Remove-Item -Recurse -Force TestResults -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force coveragereport -ErrorAction SilentlyContinue
+ 
+# Sur Linux/macOS
+rm -rf TestResults coveragereport
+ 
+dotnet test --collect:"XPlat Code Coverage" --settings ./coverlet.runsettings --results-directory ./TestResults
+reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:"./coveragereport" -reporttypes:"Html;TextSummary"
+```
+ 
+Le rapport HTML est généré dans `coveragereport/index.html`. Un résumé textuel est disponible dans `coveragereport/Summary.txt`.
+ 
+### Couverture actuelle
+ 
+| Indicateur | Valeur |
+|---|---|
+| Couverture de ligne | ~78 % |
+| Couverture de méthode | ~87 % |
+| Tests | 16 (réussis) |
+ 
+Le calcul exclut les Migrations EF Core (code auto-généré), le seeder de bootstrap, l'`ApplicationDbContextFactory` et le `Program.cs`.
+ 
+---
+ 
+## Compte administrateur par défaut
+ 
+Au premier lancement, le seeder crée trois comptes administrateurs et plusieurs utilisateurs de démonstration. Tous partagent le même mot de passe (celui défini dans `Seed__AdminPassword`).
+ 
+| Email | Pseudo | Rôle |
+|---|---|---|
+| `admin@cesizen.fr` | `admin` | Administrateur |
+| `sante@cesizen.fr` | `admin_sante` | Administrateur |
+| `contenu@cesizen.fr` | `admin_contenu` | Administrateur |
+
+ 
+---
+ 
+## Documentation API
+ 
+L'API expose une documentation Swagger interactive à l'adresse `https://localhost:7001/swagger` une fois le projet lancé.
+ 
+L'authentification se fait via un jeton JWT à transmettre dans l'en-tête HTTP :
+ 
+```text
+Authorization: Bearer <votre_jeton>
+```
+ 
+Pour obtenir un jeton, appelez l'endpoint `POST /api/auth/login` avec un email et un mot de passe valides. Le jeton retourné est valide 60 minutes.
+ 
+---

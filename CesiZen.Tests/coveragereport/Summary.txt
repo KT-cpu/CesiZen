@@ -1,0 +1,48 @@
+Summary
+  Generated on: 09/05/2026 - 20:28:23
+  Coverage date: 09/05/2026 - 20:28:06
+  Parser: Cobertura
+  Assemblies: 2
+  Classes: 24
+  Files: 24
+  Line coverage: 78.8%
+  Covered lines: 766
+  Uncovered lines: 205
+  Coverable lines: 971
+  Total lines: 1743
+  Branch coverage: 43.2% (84 of 194)
+  Covered branches: 84
+  Total branches: 194
+  Method coverage: 87.5% (98 of 112)
+  Full method coverage: 66.9% (75 of 112)
+  Covered methods: 98
+  Fully covered methods: 75
+  Total methods: 112
+
+CesiZen.API                                                           76.7%
+  CesiZen.API.Controllers.AuthController                              92.5%
+  CesiZen.API.Controllers.BaseController                              61.5%
+  CesiZen.API.Controllers.EmotionController                           94.1%
+  CesiZen.API.Controllers.InformationController                       97.5%
+  CesiZen.API.Controllers.TrackerEmotionController                    61.7%
+  CesiZen.API.Controllers.UtilisateurController                         64%
+  CesiZen.API.Middlewares.ExceptionMiddleware                         71.4%
+  CesiZen.API.Services.AuthService                                    93.1%
+  CesiZen.API.Services.EmotionService                                 68.6%
+  CesiZen.API.Services.InformationService                              100%
+  CesiZen.API.Services.TrackerEmotionService                            87%
+  CesiZen.API.Services.UtilisateurService                               45%
+
+CesiZen.Infrastructure                                                89.9%
+  CesiZen.Infrastructure.Configurations.Emotion1Configuration          100%
+  CesiZen.Infrastructure.Configurations.Emotion2Configuration          100%
+  CesiZen.Infrastructure.Configurations.InformationConfiguration       100%
+  CesiZen.Infrastructure.Configurations.TrackerEmotionConfiguration    100%
+  CesiZen.Infrastructure.Configurations.UtilisateurConfiguration       100%
+  CesiZen.Infrastructure.Data.ApplicationDbContext                     100%
+  CesiZen.Infrastructure.Repositories.Emotion1Repository               100%
+  CesiZen.Infrastructure.Repositories.Emotion2Repository                50%
+  CesiZen.Infrastructure.Repositories.GenericRepository<T>            92.3%
+  CesiZen.Infrastructure.Repositories.InformationRepository            100%
+  CesiZen.Infrastructure.Repositories.TrackerEmotionRepository          55%
+  CesiZen.Infrastructure.Repositories.UtilisateurRepository           88.2%

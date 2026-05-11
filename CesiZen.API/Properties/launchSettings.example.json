@@ -1,0 +1,21 @@
+{
+  "profiles": {
+    "CesiZen.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JwtSettings__Secret": "<GENEREZ_UNE_CLE_VIA_OPENSSL_RAND_BASE64_64>",
+        "JwtSettings__Issuer": "<URL_DE_VOTRE_API>",
+        "JwtSettings__Audience": "<URL_DE_VOTRE_API>",
+        "JwtSettings__ExpirationMinutes": "60",
+        "ConnectionStrings__DefaultConnection": "<VOTRE_CHAINE_DE_CONNEXION_SQL_SERVER>",
+        "Cors__OriginesAutorisees__0": "<URL_DE_VOTRE_FRONT>",
+        "Seed__AdminPassword": "<MOT_DE_PASSE_ADMIN_INITIAL>"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "<URL_HTTPS_LOCALE>;<URL_HTTP_LOCALE>"
+    }
+  }
+}

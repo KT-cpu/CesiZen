@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CesiZen.API", "CesiZen.API\CesiZen.API.csproj", "{8C54F0F1-A440-420C-8C3C-F0DDFBBBBEEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CesiZen.Domain", "CesiZen.Domain\CesiZen.Domain.csproj", "{535CFD7E-8A7E-46D5-8DD8-EBDF07E80064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CesiZen.Infrastructure", "CesiZen.Infrastructure\CesiZen.Infrastructure.csproj", "{3F1B11B4-FED9-4024-9791-7DCBA735DA40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CesiZen.Web.Server", "CesiZen.Web\CesiZen.Web.Server\CesiZen.Web.Server.csproj", "{4CB81385-3C9E-49BE-9887-839D519E5FAB}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cesizen.web.client", "CesiZen.Web\cesizen.web.client\cesizen.web.client.esproj", "{9C08196A-9314-4559-B81A-7EA8A891E8FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CesiZen.Tests", "CesiZen.Tests\CesiZen.Tests.csproj", "{FA2F5E5B-92FB-4C06-93C7-9AA7DDDB7E8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C54F0F1-A440-420C-8C3C-F0DDFBBBBEEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C54F0F1-A440-420C-8C3C-F0DDFBBBBEEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C54F0F1-A440-420C-8C3C-F0DDFBBBBEEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C54F0F1-A440-420C-8C3C-F0DDFBBBBEEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{535CFD7E-8A7E-46D5-8DD8-EBDF07E80064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{535CFD7E-8A7E-46D5-8DD8-EBDF07E80064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{535CFD7E-8A7E-46D5-8DD8-EBDF07E80064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{535CFD7E-8A7E-46D5-8DD8-EBDF07E80064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F1B11B4-FED9-4024-9791-7DCBA735DA40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F1B11B4-FED9-4024-9791-7DCBA735DA40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F1B11B4-FED9-4024-9791-7DCBA735DA40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F1B11B4-FED9-4024-9791-7DCBA735DA40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB81385-3C9E-49BE-9887-839D519E5FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB81385-3C9E-49BE-9887-839D519E5FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB81385-3C9E-49BE-9887-839D519E5FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB81385-3C9E-49BE-9887-839D519E5FAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C08196A-9314-4559-B81A-7EA8A891E8FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C08196A-9314-4559-B81A-7EA8A891E8FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C08196A-9314-4559-B81A-7EA8A891E8FD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9C08196A-9314-4559-B81A-7EA8A891E8FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C08196A-9314-4559-B81A-7EA8A891E8FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C08196A-9314-4559-B81A-7EA8A891E8FD}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FA2F5E5B-92FB-4C06-93C7-9AA7DDDB7E8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA2F5E5B-92FB-4C06-93C7-9AA7DDDB7E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA2F5E5B-92FB-4C06-93C7-9AA7DDDB7E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA2F5E5B-92FB-4C06-93C7-9AA7DDDB7E8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

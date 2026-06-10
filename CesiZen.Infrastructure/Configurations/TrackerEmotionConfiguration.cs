@@ -13,6 +13,8 @@ namespace CesiZen.Infrastructure.Configurations
 
             builder.Property(t => t.DateSaisie)
                 .IsRequired();
+
+            builder.HasQueryFilter(t => t.Utilisateur.EstActif);
         }
     }
 }

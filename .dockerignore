@@ -1,0 +1,50 @@
+# Build artifacts .NET
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# IDE
+**/.vs/
+**/.vscode/
+**/.idea/
+*.user
+*.suo
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+
+# Variables d'environnement et secrets
+**/appsettings.Development.json
+**/appsettings.*.local.json
+**/.env
+**/.env.*
+
+# Tests
+**/TestResults/
+**/coverage/
+
+# Logs
+**/*.log
+**/logs/
+
+# Node modules
+**/node_modules/
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Projet launcher non déployé
+CesiZen.Web/CesiZen.Web.Server/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,32 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cesizen-api:dev
+    container_name: cesizen-api
+    expose:
+      - "8080"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - cesizen-network
+
+  web:
+    build:
+      context: ./CesiZen.Web/cesizen.web.client
+      dockerfile: Dockerfile
+    image: cesizen-web:dev
+    container_name: cesizen-web
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - cesizen-network
+
+networks:
+  cesizen-network:
+    driver: bridge

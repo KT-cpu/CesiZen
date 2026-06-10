@@ -9,6 +9,10 @@
 *.user
 *.suo
 
+# Variables d'environnement
+.env
+.env.local
+
 # NuGet
 *.nupkg
 packages/
@@ -22,3 +26,5 @@ dist/
 
 # Configurations locales avec secrets
 **/Properties/launchSettings.json
+**/appsettings.Development.json
+**/appsettings.*.local.json

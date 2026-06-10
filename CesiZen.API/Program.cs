@@ -7,9 +7,11 @@ using CesiZen.Domain.Interfaces.Service;
 using CesiZen.Infrastructure.Data;
 using CesiZen.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -22,6 +24,8 @@ namespace CesiZen.API
     {
         public static async Task Main(string[] args)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration
@@ -30,11 +34,16 @@ namespace CesiZen.API
                     "La chaîne de connexion 'DefaultConnection' n'est pas configurée.");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString, sqlOptions =>
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(30),
-                        errorNumbersToAdd: null)));
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorCodesToAdd: null))
+            .ConfigureWarnings(warnings =>
+                warnings.Ignore(RelationalEventId.PendingModelChangesWarning)));
+
+            builder.Services.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>(name: "database");
 
             var jwtSecret = builder.Configuration["JwtSettings:Secret"]
                 ?? throw new InvalidOperationException(
@@ -222,6 +231,9 @@ namespace CesiZen.API
                     "Permissions-Policy", "camera=(), microphone=(), geolocation=()");
                 await next();
             });
+
+
+            app.MapHealthChecks("/health");
 
             app.MapControllers();
 

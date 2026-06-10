@@ -21,6 +21,9 @@ services:
     container_name: cesizen-web
     ports:
       - "8080:80"
+    environment:
+      - API_URL=http://api:8080
+      - API_HOST=api:8080
     depends_on:
       - api
     restart: unless-stopped

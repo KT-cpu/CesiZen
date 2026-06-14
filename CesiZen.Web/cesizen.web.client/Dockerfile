@@ -16,6 +16,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copier le template Nginx
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
+ENV NGINX_ENVSUBST_FILTER="API_URL|API_HOST"
+
 # Copier les fichiers buildés
 COPY --from=build /app/dist /usr/share/nginx/html
 

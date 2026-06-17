@@ -1,0 +1,116 @@
+name: 01-1 - Integration - Test Back & Front
+
+on:
+  workflow_call:
+
+jobs:
+
+  Backend:
+    name: Backend (.NET 9)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore CesiZen.API.sln
+
+      - name: Build
+        run: dotnet build CesiZen.API.sln --no-restore --configuration Release
+
+      - name: Run tests with coverage
+        run: |
+          dotnet test CesiZen.API.sln \
+            --no-build \
+            --configuration Release \
+            --verbosity normal \
+            --logger "trx;LogFileName=test-results.trx" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: '**/test-results.trx'
+          retention-days: 3
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: back-coverage-report
+          path: ./coverage
+          retention-days: 3
+
+
+  Frontend:
+    name: Frontend (React Vite)
+    needs: [Backend]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: CesiZen.Web/cesizen.web.client
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: CesiZen.Web/cesizen.web.client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: CesiZen.Web/cesizen.web.client/dist
+          retention-days: 1
+
+
+  Docker:
+    name: Docker (API Web)
+    needs: [Backend, Frontend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: cesizen-api:ci
+
+
+      - name: Build Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./CesiZen.Web/cesizen.web.client
+          file: ./CesiZen.Web/cesizen.web.client/Dockerfile
+          push: false
+          load: true
+          tags: cesizen-web:ci

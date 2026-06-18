@@ -19,14 +19,14 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore CesiZen.sln
+        run: dotnet restore CesiZen.API.sln
 
       - name: Build
-        run: dotnet build CesiZen.sln --no-restore --configuration Release
+        run: dotnet build CesiZen.API.sln --no-restore --configuration Release
 
       - name: Run tests with OpenCover coverage
         run: |
-          dotnet test CesiZen.sln \
+          dotnet test CesiZen.API.sln \
             --no-build \
             --configuration Release \
             --verbosity normal \

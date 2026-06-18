@@ -1,0 +1,21 @@
+name: 01 - Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Test_Back_Front:
+    uses: ./.github/workflows/01-1_TestBackFront.yml
+    secrets: inherit
+
+  Quality_SonarCloud:
+    needs: [Test_Back_Front]
+    uses: ./.github/workflows/01-2_SonarQube.yml
+    secrets: inherit

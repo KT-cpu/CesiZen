@@ -7,7 +7,7 @@ jobs:
 
   Backend:
     name: Backend (.NET 9)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -19,20 +19,21 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore CesiZen.API.sln
+        run: dotnet restore CesiZen.sln
 
       - name: Build
-        run: dotnet build CesiZen.API.sln --no-restore --configuration Release
+        run: dotnet build CesiZen.sln --no-restore --configuration Release
 
-      - name: Run tests with coverage
+      - name: Run tests with OpenCover coverage
         run: |
-          dotnet test CesiZen.API.sln \
+          dotnet test CesiZen.sln \
             --no-build \
             --configuration Release \
             --verbosity normal \
             --logger "trx;LogFileName=test-results.trx" \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./coverage
+            --results-directory ./coverage \
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Upload test results
         if: always()
@@ -40,21 +41,21 @@ jobs:
         with:
           name: backend-test-results
           path: '**/test-results.trx'
-          retention-days: 3
+          retention-days: 2
 
-      - name: Upload coverage report
+      - name: Upload backend coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: back-coverage-report
           path: ./coverage
-          retention-days: 3
+          retention-days: 2
 
 
   Frontend:
-    name: Frontend (React Vite)
+    name: Frontend (React + Vite)
     needs: [Backend]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: CesiZen.Web/cesizen.web.client
@@ -81,13 +82,26 @@ jobs:
         with:
           name: frontend-dist
           path: CesiZen.Web/cesizen.web.client/dist
-          retention-days: 1
+          retention-days: 2
+
+      - name: Create empty frontend coverage placeholder
+        run: |
+          mkdir -p coverage
+          touch coverage/.gitkeep
+
+      - name: Upload frontend coverage placeholder
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: front-coverage-report
+          path: CesiZen.Web/cesizen.web.client/coverage
+          retention-days: 2
 
 
   Docker:
     name: Docker (API Web)
     needs: [Backend, Frontend]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -114,3 +128,10 @@ jobs:
           push: false
           load: true
           tags: cesizen-web:ci
+
+
+      - name: Display image sizes
+        run: |
+          echo "::group::Docker images sizes"
+          docker images cesizen-api:ci cesizen-web:ci
+          echo "::endgroup::"

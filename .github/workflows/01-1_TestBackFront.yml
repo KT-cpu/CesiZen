@@ -133,5 +133,6 @@ jobs:
       - name: Display image sizes
         run: |
           echo "::group::Docker images sizes"
-          docker images cesizen-api:ci cesizen-web:ci
+          docker images cesizen-api:ci
+          docker images cesizen-web:ci
           echo "::endgroup::"

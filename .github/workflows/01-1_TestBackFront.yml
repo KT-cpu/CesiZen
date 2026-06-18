@@ -84,19 +84,6 @@ jobs:
           path: CesiZen.Web/cesizen.web.client/dist
           retention-days: 2
 
-      - name: Create empty frontend coverage placeholder
-        run: |
-          mkdir -p coverage
-          touch coverage/.gitkeep
-
-      - name: Upload frontend coverage placeholder
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: front-coverage-report
-          path: CesiZen.Web/cesizen.web.client/coverage
-          retention-days: 2
-
 
   Docker:
     name: Docker (API Web)

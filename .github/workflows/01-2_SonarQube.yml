@@ -24,7 +24,7 @@ jobs:
       - name: SonarCloud Scan (Backend)
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
         with:
           args: >
             -Dsonar.projectKey=kt-cpu_CesiZen_Back
@@ -46,15 +46,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download Frontend coverage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: front-coverage-report
-          path: CesiZen.Web/cesizen.web.client/coverage
-
       - name: SonarCloud Scan (Frontend)
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
         with:
           projectBaseDir: CesiZen.Web/cesizen.web.client

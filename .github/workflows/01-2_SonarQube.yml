@@ -1,13 +1,12 @@
-name: 01-2 - Integration - SonarCloud Analysis
+name: 01-2 - Integration - SonarQube Analysis
 
 on:
   workflow_call:
 
 jobs:
-
   QualityBack:
-    name: SonarCloud Backend (.NET)
-    runs-on: ubuntu-24.04
+    name: SonarQube Backend (.NET)
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
@@ -21,24 +20,33 @@ jobs:
           name: back-coverage-report
           path: ./coverage
 
-      - name: SonarCloud Scan (Backend)
+      - name: Determine branch name
+        id: branch
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: SonarQube Scan (Backend)
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+          SONAR_HOST_URL: http://localhost:9000
         with:
           args: >
-            -Dsonar.projectKey=kt-cpu_CesiZen_Back
-            -Dsonar.organization=kt-cpu
+            -Dsonar.projectKey=CesiZen-Back
             -Dsonar.sources=CesiZen.API,CesiZen.Domain,CesiZen.Infrastructure
             -Dsonar.tests=CesiZen.Tests
             -Dsonar.cs.opencover.reportsPaths=coverage/**/coverage.opencover.xml
             -Dsonar.coverage.exclusions=**/Migrations/**,**/Program.cs,**/*Dto*.cs
             -Dsonar.exclusions=**/Migrations/**,**/bin/**,**/obj/**
-
+            -Dsonar.branch.name=${{ steps.branch.outputs.name }}
 
   QualityFront:
-    name: SonarCloud Frontend (React)
-    runs-on: ubuntu-24.04
+    name: SonarQube Frontend (React)
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
@@ -46,9 +54,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan (Frontend)
+      - name: Download Frontend coverage artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: front-coverage-report
+          path: CesiZen.Web/cesizen.web.client/coverage
+
+      - name: Determine branch name
+        id: branch
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: SonarQube Scan (Frontend)
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+          SONAR_HOST_URL: http://localhost:9000
         with:
           projectBaseDir: CesiZen.Web/cesizen.web.client
+          args: >
+            -Dsonar.projectKey=CesiZen-Front
+            -Dsonar.branch.name=${{ steps.branch.outputs.name }}

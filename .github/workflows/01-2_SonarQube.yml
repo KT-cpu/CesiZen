@@ -1,4 +1,4 @@
-name: 01-2 - Integration - SonarQube Analysis
+name: 01-2 - Integration - SonarCloud Analysis
 
 on:
   workflow_call:

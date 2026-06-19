@@ -23,7 +23,7 @@ jobs:
       - name: SonarQube Scan (Backend)
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
           SONAR_HOST_URL: http://localhost:9000
         with:
           args: >
@@ -54,7 +54,7 @@ jobs:
       - name: SonarQube Scan (Frontend)
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
           SONAR_HOST_URL: http://localhost:9000
         with:
           projectBaseDir: CesiZen.Web/cesizen.web.client

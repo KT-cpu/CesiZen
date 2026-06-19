@@ -27,7 +27,7 @@ jobs:
           SONAR_HOST_URL: http://localhost:9000
         with:
           args: >
-            -Dsonar.projectKey=CesiZen_Back
+            -Dsonar.projectKey=CesiZen-Back
             -Dsonar.sources=CesiZen.API,CesiZen.Domain,CesiZen.Infrastructure
             -Dsonar.tests=CesiZen.Tests
             -Dsonar.cs.opencover.reportsPaths=coverage/**/coverage.opencover.xml
@@ -47,6 +47,7 @@ jobs:
 
       - name: Download Frontend coverage artifact
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: front-coverage-report
           path: CesiZen.Web/cesizen.web.client/coverage
@@ -59,5 +60,5 @@ jobs:
         with:
           projectBaseDir: CesiZen.Web/cesizen.web.client
           args: >
-            -Dsonar.projectKey=CesiZen_Front
+            -Dsonar.projectKey=CesiZen-Front
             -Dsonar.branch.name=${{ github.ref_name }}

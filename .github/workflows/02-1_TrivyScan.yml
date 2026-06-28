@@ -1,0 +1,74 @@
+name: 02-2 - Delivery - Trivy Scan
+
+on:
+  workflow_call:
+
+env:
+  REGISTRY: ghcr.io
+  USERNAME: ${{ github.actor }}
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  Trivy-Scan_Back:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Registry login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ secrets.PAT_TOKEN }}
+
+      - name: Downcase Image Name
+        run: echo "IMAGE_NAME_LOWER=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      - name: Trivy Scan Back
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}-back:canary
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          output: trivy-results-back.txt
+
+      - name: Upload Trivy report back
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-results-back
+          path: trivy-results-back.txt
+          retention-days: 2
+
+  Trivy-Scan_Front:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Registry login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ secrets.PAT_TOKEN }}
+
+      - name: Downcase Image Name
+        run: echo "IMAGE_NAME_LOWER=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      - name: Trivy Scan Front
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}-front:canary
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          output: trivy-results-front.txt
+
+      - name: Upload Trivy report front
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-results-front
+          path: trivy-results-front.txt
+          retention-days: 2

@@ -1,0 +1,47 @@
+name: 02-2 - Delivery - K6 Load Test
+
+on:
+  workflow_call:
+
+jobs:
+  K6_Load_Test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Staging Availability Check
+        run: |
+          echo "Attente de la disponibilité du staging..."
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ secrets.STAGING_URL }}/health" || echo "000")
+            if [ "$code" = "200" ]; then
+              echo "Staging prêt (HTTP 200) après $i tentative(s)"
+              exit 0
+            fi
+            echo "Tentative $i/30 : HTTP $code — nouvel essai dans 10s..."
+            sleep 10
+          done
+          echo "Staging indisponible après 5 minutes"
+          exit 1
+
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run K6 load test
+        uses: grafana/run-k6-action@v1
+        with:
+          path: tests/k6/load-test.js
+        env:
+          BASE_URL: ${{ secrets.STAGING_URL }}
+          TEST_EMAIL: ${{ secrets.K6_TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.K6_TEST_PASSWORD }}
+
+      - name: Upload K6 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-results
+          path: summary.json
+          retention-days: 7
+          if-no-files-found: warn

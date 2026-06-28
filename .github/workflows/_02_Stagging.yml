@@ -17,5 +17,10 @@ jobs:
 
   Trivy_Scan_Package:
     needs: [Build_Push_Docker]
-    uses: ./.github/workflows/02-2_TrivyScan.yml
+    uses: ./.github/workflows/02-1_TrivyScan.yml
+    secrets: inherit
+
+  K6_Load_Test:
+    needs: [Trivy_Scan_Package]
+    uses: ./.github/workflows/02-2_K6.yml
     secrets: inherit

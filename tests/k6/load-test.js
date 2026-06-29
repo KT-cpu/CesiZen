@@ -99,6 +99,8 @@ export function utilisateurConnecte() {
   sleep(1);
 }
 
+var __VU_TOKEN = null;
+
 export function handleSummary(data) {
   return {
     'summary.json': JSON.stringify(data, null, 2),

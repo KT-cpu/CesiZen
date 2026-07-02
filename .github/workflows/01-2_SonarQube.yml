@@ -43,6 +43,7 @@ jobs:
             -Dsonar.coverage.exclusions=**/Migrations/**,**/Program.cs,**/*Dto*.cs
             -Dsonar.exclusions=**/Migrations/**,**/bin/**,**/obj/**
             -Dsonar.branch.name=${{ steps.branch.outputs.name }}
+            -Dsonar.qualityGate.wait=true
 
   QualityFront:
     name: SonarQube Frontend (React)
@@ -80,3 +81,4 @@ jobs:
           args: >
             -Dsonar.projectKey=CesiZen-Front
             -Dsonar.branch.name=${{ steps.branch.outputs.name }}
+            -Dsonar.qualityGate.wait=true

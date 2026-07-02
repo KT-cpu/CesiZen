@@ -10,6 +10,8 @@ RUN npm run build
 
 FROM nginx:alpine AS final
 
+RUN apk update && apk upgrade --no-cache
+
 # Supprimer la config par défaut
 RUN rm /etc/nginx/conf.d/default.conf
 

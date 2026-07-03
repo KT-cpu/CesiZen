@@ -1,0 +1,62 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+# Paramètres kernel requis par SonarQube (Elasticsearch)
+write_files:
+  - path: /etc/sysctl.d/99-sonarqube.conf
+    content: |
+      vm.max_map_count=524288
+      fs.file-max=131072
+
+  # docker-compose.yml de SonarQube écrit directement sur la VM
+  - path: /opt/sonarqube/docker-compose.yml
+    content: |
+      services:
+        sonarqube:
+          image: mc1arke/sonarqube-with-community-branch-plugin:25.9.0.112764-community
+          container_name: sonarqube
+          depends_on:
+            - db
+          environment:
+            SONAR_JDBC_URL: jdbc:postgresql://db:5432/sonarqube
+            SONAR_JDBC_USERNAME: sonar
+            SONAR_JDBC_PASSWORD: ${SONAR_DB_PASSWORD}
+          ports:
+            - "9000:9000"
+          volumes:
+            - sonarqube_data:/opt/sonarqube/data
+            - sonarqube_extensions:/opt/sonarqube/extensions
+            - sonarqube_logs:/opt/sonarqube/logs
+          restart: unless-stopped
+
+        db:
+          image: postgres:16
+          container_name: sonarqube-db
+          environment:
+            POSTGRES_USER: sonar
+            POSTGRES_PASSWORD: ${SONAR_DB_PASSWORD}
+            POSTGRES_DB: sonarqube
+          volumes:
+            - postgresql_data:/var/lib/postgresql/data
+          restart: unless-stopped
+
+      volumes:
+        sonarqube_data:
+        sonarqube_extensions:
+        sonarqube_logs:
+        postgresql_data:
+
+runcmd:
+  # Appliquer les paramètres kernel
+  - sysctl --system
+
+  # Installer Docker
+  - curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+  - sh /tmp/get-docker.sh
+
+  # Créer le fichier .env avec le mot de passe BDD (injecté via cloud-init au déploiement)
+  - echo "SONAR_DB_PASSWORD=__SONAR_DB_PASSWORD__" > /opt/sonarqube/.env
+
+  # Lancer SonarQube
+  - cd /opt/sonarqube && docker compose up -d

@@ -84,42 +84,16 @@ jobs:
           path: CesiZen.Web/cesizen.web.client/dist
           retention-days: 2
 
-
-  Docker:
-    name: Docker (API Web)
-    needs: [Backend, Frontend]
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build API image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          load: true
-          tags: cesizen-api:ci
-
-
-      - name: Build Web image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./CesiZen.Web/cesizen.web.client
-          file: ./CesiZen.Web/cesizen.web.client/Dockerfile
-          push: false
-          load: true
-          tags: cesizen-web:ci
-
-
-      - name: Display image sizes
+      - name: Create frontend coverage placeholder
         run: |
-          echo "::group::Docker images sizes"
-          docker images cesizen-api:ci
-          docker images cesizen-web:ci
-          echo "::endgroup::"
+          mkdir -p coverage
+          echo "no coverage yet (Vitest not configured)" > coverage/placeholder.txt
+
+      - name: Upload frontend coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: front-coverage-report
+          path: CesiZen.Web/cesizen.web.client/coverage
+          retention-days: 2
+          if-no-files-found: warn

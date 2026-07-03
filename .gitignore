@@ -28,3 +28,4 @@ dist/
 **/Properties/launchSettings.json
 **/appsettings.Development.json
 **/appsettings.*.local.json
+infra/sonarqube/params.generated.json

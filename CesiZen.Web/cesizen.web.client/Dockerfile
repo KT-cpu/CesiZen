@@ -8,8 +8,12 @@ COPY . .
 RUN npm run build
 
 
-FROM nginx:alpine AS final
+FROM nginxinc/nginx-unprivileged:alpine AS final
 
+# Bascule temporaire en root pour la mise à jour des paquets
+USER root
+
+# Mise à jour des paquets système (correctifs de sécurité)
 RUN apk update && apk upgrade --no-cache
 
 # Supprimer la config par défaut
@@ -23,6 +27,9 @@ ENV NGINX_ENVSUBST_FILTER="API_URL|API_HOST"
 # Copier les fichiers buildés
 COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+# Retour en utilisateur non privilégié pour l'exécution
+USER nginx
+
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]

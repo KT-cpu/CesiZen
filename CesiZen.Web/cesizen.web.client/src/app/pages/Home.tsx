@@ -6,8 +6,9 @@ import { useAuth } from '../context/AuthContext';
 import { useAppData } from '../context/AppDataContext';
 import type { Information } from '../context/AppDataContext';
 import { ImageWithFallback } from '../components/ImageWithFallback';
+import heroImage from '../assets/hero.jpg';
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1767611070476-09d0db4374a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200';
+const HERO_IMAGE = heroImage;
 
 export function Home() {
   const { isAuthenticated } = useAuth();

@@ -1,18 +1,11 @@
 const API_BASE = '/api';
 
-function getToken(): string | null {
-  return localStorage.getItem('cesizen_token');
-}
-
 async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = getToken();
-
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
 
@@ -21,9 +14,7 @@ async function request<T>(
     headers,
   });
 
-  //Token expiré ou invalide = déconnexion automatique
   if (response.status === 401) {
-    localStorage.removeItem('cesizen_token');
     window.location.href = '/login';
     throw new Error('Session expirée. Veuillez vous reconnecter.');
   }

@@ -13,12 +13,11 @@ interface AuthUser {
 
 interface AuthContextType {
   currentUser: AuthUser | null;
-  token: string | null;
   isAdmin: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, motDePasse: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
 }
 
@@ -29,59 +28,27 @@ interface RegisterData {
   confirmationMotDePasse: string;
 }
 
-interface AuthResponse {
-  token: string;
-  expiration: string;
-  pseudo: string;
-  role: string;
-}
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const TOKEN_KEY = 'cesizen_token';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(
-    () => localStorage.getItem(TOKEN_KEY)
-  );
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(
-  () => !!localStorage.getItem(TOKEN_KEY)
-);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!token) {
-      setCurrentUser(null);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
     apiClient.get<AuthUser>('/utilisateur/me')
       .then(setCurrentUser)
-      .catch(() => {
-        localStorage.removeItem(TOKEN_KEY);
-        setToken(null);
-        setCurrentUser(null);
-      })
+      .catch(() => setCurrentUser(null))
       .finally(() => setIsLoading(false));
-  }, [token]);
+  }, []);
 
   const login = async (email: string, motDePasse: string) => {
-    const response = await apiClient.post<AuthResponse>('/auth/login', {
-      email,
-      motDePasse,
-    });
-
-    localStorage.setItem(TOKEN_KEY, response.token);
-    setToken(response.token);
-
+    await apiClient.post('/auth/login', { email, motDePasse });
     const user = await apiClient.get<AuthUser>('/utilisateur/me');
     setCurrentUser(user);
   };
 
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
+  const logout = async () => {
+    await apiClient.post('/auth/logout', {});
     setCurrentUser(null);
   };
 
@@ -92,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       currentUser,
-      token,
       isAdmin: currentUser?.role === 'Administrateur',
       isAuthenticated: !!currentUser,
       isLoading,

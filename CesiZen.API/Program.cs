@@ -78,6 +78,18 @@ namespace CesiZen.API
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            if (string.IsNullOrEmpty(context.Request.Headers.Authorization) &&
+                                context.Request.Cookies.TryGetValue("cesizen_token", out var tokenFromCookie))
+                            {
+                                context.Token = tokenFromCookie;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             var originesAutorisees = builder.Configuration

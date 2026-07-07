@@ -11,11 +11,11 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    setUserMenuOpen(false);
-    setMenuOpen(false);
-    navigate('/');
+  const handleLogout = async () => {
+  await logout();
+  setUserMenuOpen(false);
+  setMenuOpen(false);
+  navigate('/');
   };
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`);

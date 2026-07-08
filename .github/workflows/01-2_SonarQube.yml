@@ -41,7 +41,7 @@ jobs:
             /d:sonar.branch.name="${{ steps.branch.outputs.name }}" \
             /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" \
             /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/*Dto*.cs" \
-            /d:sonar.exclusions="**/Migrations/**,**/bin/**,**/obj/**" \
+            /d:sonar.exclusions="**/Migrations/**,**/bin/**,**/obj/**,CesiZen.Web/**,**/node_modules/**" \
             /d:sonar.qualityGate.wait=true
 
       - name: Build

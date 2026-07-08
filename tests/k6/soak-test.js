@@ -1,5 +1,5 @@
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-import { visiteurAnonyme, utilisateurConnecte } from './common.js';
+import { login, visiteurAnonyme, utilisateurConnecte } from './common.js';
 
 export { visiteurAnonyme, utilisateurConnecte };
 
@@ -19,6 +19,10 @@ export const options = {
     http_req_failed: ['rate<0.1'],
   },
 };
+
+export function setup() {
+  return { token: login() };
+}
 
 export function handleSummary(data) {
   return {

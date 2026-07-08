@@ -2,6 +2,8 @@ import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 
+let __VU_TOKEN = null;
+
 export const errorRate = new Rate('errors');
 export const loginDuration = new Trend('login_duration');
 
@@ -64,5 +66,3 @@ export function utilisateurConnecte() {
   }
   sleep(1);
 }
-
-var __VU_TOKEN = null;

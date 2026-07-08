@@ -39,3 +39,26 @@ jobs:
             --file "${{ steps.filename.outputs.name }}" \
             --sas-token "${{ secrets.AZURE_STORAGE_SAS }}"
           echo "Backup uploadé : ${{ steps.filename.outputs.name }}"
+
+      - name: Nettoyage des sauvegardes anciennes (rétention 30 jours)
+        run: |
+          echo "Suppression des sauvegardes de plus de 30 jours..."
+          LIMITE=$(date -u -d '30 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          echo "Seuil de rétention : $LIMITE"
+
+          az storage blob list \
+            --account-name "${{ secrets.AZURE_STORAGE_ACCOUNT }}" \
+            --container-name "${{ secrets.AZURE_BACKUP_CONTAINER }}" \
+            --sas-token "${{ secrets.AZURE_STORAGE_SAS }}" \
+            --query "[?properties.lastModified < '$LIMITE'].name" \
+            --output tsv | while read -r blob; do
+              if [ -n "$blob" ]; then
+                echo "Suppression : $blob"
+                az storage blob delete \
+                  --account-name "${{ secrets.AZURE_STORAGE_ACCOUNT }}" \
+                  --container-name "${{ secrets.AZURE_BACKUP_CONTAINER }}" \
+                  --sas-token "${{ secrets.AZURE_STORAGE_SAS }}" \
+                  --name "$blob"
+              fi
+            done
+          echo "Nettoyage terminé"

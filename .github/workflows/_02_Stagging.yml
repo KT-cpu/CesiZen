@@ -24,3 +24,8 @@ jobs:
     needs: [Trivy_Scan_Package]
     uses: ./.github/workflows/02-2_K6.yml
     secrets: inherit
+
+  Zap_Scan:
+    needs: [K6_Load_Test]
+    uses: ./.github/workflows/02-3_ZapScan.yml
+    secrets: inherit

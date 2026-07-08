@@ -1,4 +1,4 @@
-name: 02-2 - Delivery - Trivy Scan
+name: 02-1 - Delivery - Trivy Scan
 
 on:
   workflow_call:

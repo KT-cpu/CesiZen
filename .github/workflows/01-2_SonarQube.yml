@@ -89,5 +89,11 @@ jobs:
           projectBaseDir: CesiZen.Web/cesizen.web.client
           args: >
             -Dsonar.projectKey=CesiZen-Front
+            -Dsonar.sources=src
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,coverage/**,**/*.config.ts,**/*.config.js,vite.config.ts
             -Dsonar.branch.name=${{ steps.branch.outputs.name }}
             -Dsonar.qualityGate.wait=true

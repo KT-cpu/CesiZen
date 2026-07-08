@@ -7,6 +7,10 @@ on:
       - release/*
   workflow_dispatch:
 
+  permissions:
+  contents: read
+  issues: write
+
 jobs:
   Build_Push_Docker:
     if: ${{ github.ref_name == 'develop' }}

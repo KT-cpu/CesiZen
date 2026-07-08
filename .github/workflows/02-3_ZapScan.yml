@@ -1,0 +1,29 @@
+name: 02-3 - Stagging - OWASP ZAP
+
+on:
+  workflow_call:
+
+jobs:
+  ZapScan:
+    name: OWASP ZAP Full Scan (UI web)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Réveiller le front staging (cold start free tier)
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.STAGING_WEB_URL }}/" || true)
+            echo "Tentative $i : $code"
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+
+      - name: OWASP ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          target: ${{ secrets.STAGING_WEB_URL }}
+          cmd_options: '-I'
+          allow_issue_writing: true
+          fail_action: false

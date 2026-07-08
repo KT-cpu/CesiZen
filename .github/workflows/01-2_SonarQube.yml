@@ -7,7 +7,6 @@ jobs:
   QualityBack:
     name: SonarQube Backend (.NET)
     runs-on: self-hosted
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,21 +28,31 @@ jobs:
             echo "name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: SonarQube Scan (Backend)
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
-          SONAR_HOST_URL: http://localhost:9000
-        with:
-          args: >
-            -Dsonar.projectKey=CesiZen-Back
-            -Dsonar.sources=CesiZen.API,CesiZen.Domain,CesiZen.Infrastructure
-            -Dsonar.tests=CesiZen.Tests
-            -Dsonar.cs.opencover.reportsPaths=coverage/**/coverage.opencover.xml
-            -Dsonar.coverage.exclusions=**/Migrations/**,**/Program.cs,**/*Dto*.cs
-            -Dsonar.exclusions=**/Migrations/**,**/bin/**,**/obj/**
-            -Dsonar.branch.name=${{ steps.branch.outputs.name }}
-            -Dsonar.qualityGate.wait=true
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: SonarQube Begin
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          dotnet sonarscanner begin \
+            /k:"CesiZen-Back" \
+            /d:sonar.host.url="http://localhost:9000" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN_BACK }}" \
+            /d:sonar.branch.name="${{ steps.branch.outputs.name }}" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/*Dto*.cs" \
+            /d:sonar.exclusions="**/Migrations/**,**/bin/**,**/obj/**,CesiZen.Web/**,**/node_modules/**" \
+            /d:sonar.qualityGate.wait=true
+
+      - name: Build
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          dotnet build CesiZen.API.sln --no-incremental
+
+      - name: SonarQube End
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN_BACK }}"
 
   QualityFront:
     name: SonarQube Frontend (React)
@@ -80,5 +89,11 @@ jobs:
           projectBaseDir: CesiZen.Web/cesizen.web.client
           args: >
             -Dsonar.projectKey=CesiZen-Front
+            -Dsonar.sources=src
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.exclusions=node_modules/**,dist/**,build/**,coverage/**,**/*.config.ts,**/*.config.js,vite.config.ts
             -Dsonar.branch.name=${{ steps.branch.outputs.name }}
             -Dsonar.qualityGate.wait=true

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,6 +42,28 @@ namespace CesiZen.API
                     errorCodesToAdd: null))
             .ConfigureWarnings(warnings =>
                 warnings.Ignore(RelationalEventId.PendingModelChangesWarning)));
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                // 3 tentatives / minute / adresse IP
+                options.AddPolicy("auth", context =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 3,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0
+                        }));
+            });
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddJsonConsole(options =>
+            {
+                options.UseUtcTimestamp = true;
+            });
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>(name: "database");
@@ -177,6 +200,11 @@ namespace CesiZen.API
                 options.MaxAge = TimeSpan.FromDays(365);
             });
 
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.AddServerHeader = false;
+            });
+
             var app = builder.Build();
 
         if (!app.Environment.IsEnvironment("Testing"))
@@ -231,12 +259,12 @@ namespace CesiZen.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseRateLimiter();
 
             app.Use(async (context, next) =>
             {
                 context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
                 context.Response.Headers.Append("X-Frame-Options", "DENY");
-                context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
                 context.Response.Headers.Append(
                     "Referrer-Policy", "strict-origin-when-cross-origin");
                 context.Response.Headers.Append(

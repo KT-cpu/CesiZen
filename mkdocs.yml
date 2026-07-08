@@ -1,0 +1,52 @@
+site_name: CESIZen — Documentation technique
+site_description: Documentation du projet CESIZen (API .NET, front React, mobile Expo)
+docs_dir: docs
+
+theme:
+  name: material
+  language: fr
+  palette:
+    - scheme: default
+      primary: green
+      accent: green
+      toggle:
+        icon: material/weather-night
+        name: Passer en mode sombre
+    - scheme: slate
+      primary: green
+      accent: green
+      toggle:
+        icon: material/weather-sunny
+        name: Passer en mode clair
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+    - toc.follow
+
+nav:
+  - Accueil: index.md
+  - Architecture: architecture.md
+  - Installation & développement: installation.md
+  - Déploiement: deploiement.md
+  - CI/CD: cicd.md
+  - Sécurité: securite.md
+  - Tests: tests.md
+  - Maintenance: maintenance.md
+  - API: api.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: fr

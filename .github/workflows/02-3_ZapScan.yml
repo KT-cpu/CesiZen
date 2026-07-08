@@ -7,6 +7,9 @@ jobs:
   ZapScan:
     name: OWASP ZAP Full Scan (UI web)
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4

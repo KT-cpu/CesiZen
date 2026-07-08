@@ -141,16 +141,15 @@ export default function Tracker() {
     }
   };
 
+  const removeEntry = async (id: number) => {
+    await apiClient.delete(`/trackeremotion/${id}`);
+    setEntries(prev => prev.filter(e => e.id !== id));
+  };
+
   const handleDelete = (id: number) => {
     Alert.alert('Supprimer', 'Supprimer cette entrée ?', [
       { text: 'Annuler', style: 'cancel' },
-      {
-        text: 'Supprimer', style: 'destructive',
-        onPress: async () => {
-          await apiClient.delete(`/trackeremotion/${id}`);
-          setEntries(prev => prev.filter(e => e.id !== id));
-        },
-      },
+      { text: 'Supprimer', style: 'destructive', onPress: () => removeEntry(id) },
     ]);
   };
 

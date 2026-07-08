@@ -30,7 +30,7 @@ WORKDIR /app
 # Créer un utilisateur non-root
 RUN groupadd -r cesizen && useradd -r -g cesizen cesizen
 
-COPY --from=build --chown=cesizen:cesizen /app/publish .
+COPY --from=build /app/publish .
 
 # Variables d'environnement par défaut
 ENV ASPNETCORE_HTTP_PORTS=8080

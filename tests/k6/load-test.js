@@ -1,5 +1,5 @@
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-import { thresholds, visiteurAnonyme, utilisateurConnecte } from './common.js';
+import { thresholds, login, visiteurAnonyme, utilisateurConnecte } from './common.js';
 
 export { visiteurAnonyme, utilisateurConnecte };
 
@@ -24,6 +24,10 @@ export const options = {
   },
   thresholds,
 };
+
+export function setup() {
+  return { token: login() };
+}
 
 export function handleSummary(data) {
   return {

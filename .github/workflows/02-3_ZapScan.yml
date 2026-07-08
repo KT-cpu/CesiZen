@@ -5,7 +5,7 @@ on:
 
 jobs:
   ZapScan:
-    name: OWASP ZAP Full Scan (UI web)
+    name: OWASP ZAP Full Scan
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Réveiller le front staging (cold start free tier)
+      - name: Réveiller le front staging
         run: |
           for i in $(seq 1 30); do
             code=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.STAGING_WEB_URL }}/" || true)

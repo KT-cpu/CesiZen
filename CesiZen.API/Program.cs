@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -205,6 +206,14 @@ namespace CesiZen.API
                 options.AddServerHeader = false;
             });
 
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
             var app = builder.Build();
 
         if (!app.Environment.IsEnvironment("Testing"))
@@ -236,6 +245,8 @@ namespace CesiZen.API
                 }
             }
         }
+
+            app.UseForwardedHeaders();
 
             app.UseMiddleware<ExceptionMiddleware>();
 

@@ -1,0 +1,29 @@
+name: 03 - Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  Prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Extraire la version depuis le tag
+        id: version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+          echo "Version de release : ${TAG#v}"
+
+  Build_Push_Docker:
+    needs: [Prepare]
+    uses: ./.github/workflows/z_Docker-Ghcr.yml
+    secrets: inherit
+    with:
+      docker-mode: ${{ needs.Prepare.outputs.version }}

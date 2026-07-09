@@ -1,0 +1,25 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+write_files:
+  # Prérequis Elasticsearch/Wazuh Indexer : mémoire virtuelle
+  - path: /etc/sysctl.d/99-wazuh.conf
+    content: |
+      vm.max_map_count=262144
+
+runcmd:
+  # Appliquer le réglage mémoire
+  - sysctl -p /etc/sysctl.d/99-wazuh.conf
+
+  # Swap de 4 Go
+  - fallocate -l 4G /swapfile
+  - chmod 600 /swapfile
+  - mkswap /swapfile
+  - swapon /swapfile
+  - bash -c "echo '/swapfile none swap sw 0 0' >> /etc/fstab"
+
+  # Installation Wazuh all-in-one (manager + indexer + dashboard)
+  - cd /root
+  - curl -sO https://packages.wazuh.com/4.x/wazuh-install.sh
+  - bash /root/wazuh-install.sh -a 2>&1 | tee /var/log/wazuh-install.log

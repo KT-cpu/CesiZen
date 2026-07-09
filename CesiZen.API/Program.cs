@@ -212,6 +212,7 @@ namespace CesiZen.API
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
+                options.ForwardLimit = null;
             });
 
             var app = builder.Build();
